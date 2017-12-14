@@ -8,6 +8,28 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
+
+'*********************************************************
+' 関数名：ファイル選択処理
+' 概  要：ファイル選択ダイアログを開き、ファイルパスを取得する
+' 引  数：初期表示パス(未指定の場合は、ドキュメントフォルダ)
+'         ダイアログメッセージ
+' 戻り値：選択したファイルパス
+'*********************************************************
+Public Function selectFile(aDefault As String)
+    Dim res As String
+    With Application.FileDialog(msoFileDialogFilePicker)
+        .Title = "対象のファイルを選択してください。"
+        If Not IsEmpty(aDefault) Then
+            .InitialFileName = aDefault
+        End If
+        If .Show = True Then
+            res = .SelectedItems(1)
+        End If
+    End With
+    selectFile = res
+End Function
+
 '*********************************************************
 ' 関数名：フォルダ選択処理
 ' 概  要：フォルダ選択ダイアログを開き、フォルダパスを取得する
