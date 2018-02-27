@@ -216,3 +216,25 @@ Public Function matcher(aTarget As String, aPattern As String) As Boolean
     End With
     matcher = res
 End Function
+
+'*********************************************************
+' 関数名：終了セル番取得処理
+' 概  要：引数に与えられた引数と正規表現パターンを比較する。
+' 引  数：シートオブジェクト(Worksheet)
+'         アドレス(String)
+'         行列フラグ(True:最終行/False:最終列)
+' 戻り値：アドレス(String)
+'*********************************************************
+Public Function getEndAddress(tSheet As Worksheet, anAddress As String, aRowCol As Boolean) As String
+    Dim res As String
+    Dim row_ As Integer
+    Dim col_ As Integer
+    row_ = tSheet.Range(anAddress).Row
+    col_ = tSheet.Range(anAddress).Column
+    If aRowCol Then
+        res = tSheet.Range(Cells(Rows.Count, col_).Address).End(xlUp).Offset(1, 0).Address
+    Else
+        res = tSheet.Range(Cells(row_, Columns.Count).Address).End(xlToLeft).Offset(0, 1).Address
+    End If
+    getEndAddress = res
+End Function
