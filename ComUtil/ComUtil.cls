@@ -199,7 +199,7 @@ End Function
 
 '*********************************************************
 ' 関数名：文字列マッチ処理
-' 概  要：引数に与えられた引数と正規表現パターンを比較する。
+' 概  要：引数に与えられた文字列と正規表現パターンを比較する。
 ' 引  数：比較対象文字列
 '         正規表現パターン
 ' 戻り値：比較結果(True:一致/False:非一致)
@@ -215,6 +215,27 @@ Public Function matcher(aTarget As String, aPattern As String) As Boolean
         res = .Test(aTarget)
     End With
     matcher = res
+End Function
+
+'*********************************************************
+' 関数名：文字列マッチ処理
+' 概  要：引数に与えられた文字列内に正規表現パターンに
+'         マッチする文字列を取得する。
+' 引  数：比較対象文字列
+'         正規表現パターン
+' 戻り値：マッチした文字列
+'*********************************************************
+Public Function getMatchPattern(aTarget As String, aPattern As String) As Variant
+    Dim res As Variant
+    Dim m As Object
+    Set m = CreateObject("VBScript.RegExp")
+    With m
+        .Pattern = aPattern
+        .IgnoreCase = True
+        .Global = True
+        res = .Test(aTarget)
+    End With
+    getMatchPattern = res
 End Function
 
 '*********************************************************
@@ -238,3 +259,37 @@ Public Function getEndAddress(tSheet As Worksheet, anAddress As String, aRowCol 
     End If
     getEndAddress = res
 End Function
+
+'*********************************************************
+' 関数名：ファイル出力(UTF8)処理
+' 概  要：引数に与えられたファイルパスに出力内容を出力する。
+' 引  数：ファイルパス(String)
+'         出力内容(String[])
+' 戻り値：なし
+'*********************************************************
+Public Function createFile(aPath As String, anOutput() As String)
+    Dim i As Long
+    Dim tmpData() As Byte
+    With CreateObject("ADODB.Stream")
+        .Charset = "UTF-8"
+        '.LineSeparator = 13    ' CR
+        '.LineSeparator = 10    ' LF
+        .LineSeparator = -1     ' CRLF
+        .Open
+        For i = 0 To UBound(anOutput)
+            .WriteText anOutput(i), 1
+        Next i
+        ' BOMなし対応 ============
+        .Position = 0
+        .Type = 1
+        .Position = 3
+        tmpData = .Read
+        .Close
+        .Open
+        .Write tmpData
+        ' =======================
+        .SaveToFile aPath, 2
+        .Close
+    End With
+End Function
+
